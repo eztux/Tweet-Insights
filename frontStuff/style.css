@@ -8,9 +8,29 @@ header,
 }
 
 #intro {
-	background: url("site-background-pic.png")no-repeat center center fixed;
+	background: url("site-background-pic3.png")no-repeat center center fixed;
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
 	background-size: cover;
 }
+h1 {
+        position: relative;
+        font-size: 135px;
+        margin-top: 0;
+        font-family: 'Lobster', helvetica, arial;
+    }
+     
+    h1 a {
+        text-decoration: none;
+        color: #666;
+        position: absolute;
+         
+        -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), color-stop(50%, rgba(0,0,0,.5)), to(rgba(0,0,0,1)));
+    }
+     
+    h1:after {
+        content : 'TweetInsights';
+        color: #d6d6d6;
+        text-shadow: 0 1px 0 white;
+    }
