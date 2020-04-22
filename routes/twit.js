@@ -18,10 +18,30 @@ var T = new Twit({
 })
 
 router.get('/', (req, res) => {
-    T.get('statuses/show/:id', { id: '1252462885579694080' }, function(err, data, response) {
+    // T.get('statuses/show/:id', { id: '1252462885579694080' }, function(err, data, response) {
+    //     let result = sentiment.analyze(data.text)
+    //     res.send(result)
+    // })
+
+    res.sendFile('C:/Users/shamu/Desktop/death-project/Tweet-Insights/public/test.html')
+})
+
+router.get('/:id', (req, res) => {
+    T.get('statuses/show/:id', { id: req.params.id }, function(err, data, response) {
         let result = sentiment.analyze(data.text)
         res.send(result)
     })
+})
+
+router.post('/twitterPost', (req, res) => {
+    console.log(req.body.url)
+    let re = /https:\/\/(twitter)\.com\/([a-zA-Z0-9_.-]+)\/(status)\/([0-9]+)/g
+
+    let arr = re.exec(req.body.url)
+
+    console.log(arr)
+
+    res.redirect(`${arr[4]}`)
 })
 
 module.exports = router;
