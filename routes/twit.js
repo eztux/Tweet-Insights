@@ -17,50 +17,86 @@ var T = new Twit({
     strictSSL:            true,     // optional - requires SSL certificates to be valid.
 })
 
-router.get('/', (req, res) => {
-    // T.get('statuses/show/:id', { id: '1252462885579694080' }, function(err, data, response) {
-    //     let result = sentiment.analyze(data.text)
-    //     res.send(result)
-    // })
+function uniq(a) {
+    var prims = {"boolean":{}, "number":{}, "string":{}}, objs = [];
 
-    res.sendFile('C:/Users/shamu/Desktop/death-project/Tweet-Insights/public/test.html')
-})
+    return a.filter(function(item) {
+        var type = typeof item;
+        if(type in prims)
+            return prims[type].hasOwnProperty(item) ? false : (prims[type][item] = true);
+        else
+            return objs.indexOf(item) >= 0 ? false : objs.push(item);
+    });
+}
+
+// router.get('/', (req, res) => {
+//     // T.get('statuses/show/:id', { id: '1252462885579694080' }, function(err, data, response) {
+//     //     let result = sentiment.analyze(data.text)
+//     //     res.send(result)
+//     // })
+
+//     res.sendFile('C:/Users/shamu/Desktop/death-project/Tweet-Insights/public/test.html')
+// })
 
 router.get('/tweet/:id', (req, res) => {
     T.get('statuses/show/:id', { id: req.params.id }, function(err, data, response) {
         let result = sentiment.analyze(data.text)
-        console.log(data)
-        res.send(data)
+        console.log(result)
+        // res.send(data)
+
+        res.render('outPage.ejs', {
+            sentiment: result
+        }) 
     })
 })
 
-router.get('/replies/:id', (req, res) => {
-    T.get('search/tweets', { q: `in_reply_to_status_id:${req.params.id}` }, function(err, data, response) {
-        // let result = sentiment.analyze(data.text)
-        console.log(data)
-        res.send(data)
+// router.get('/replies/:id', (req, res) => {
+//     T.get('search/tweets', { q: `in_reply_to_status_id:${req.params.id}` }, function(err, data, response) {
+//         // let result = sentiment.analyze(data.text)
+//         console.log(data)
+//         res.send(data)
 
-    })
-})
+//     })
+// })
 
 router.get('/user/:id', (req, res) => {
     // Make sure we count no retweets
     T.get('search/tweets', { q: `from:${req.params.id}`, count: 100 }, function(err, data, response) {
-        // let result = sentiment.analyze(data.text)
-        // res.send(data.statuses[0])
-        // console.log(data)
-
         let statuses = data.statuses
 
         let senCompSum = 0
+        let posArr = []
+        let negArr = []
         let numStatus = statuses.length
+
         console.log(numStatus)
         statuses.forEach(status => {
-            senCompSum += sentiment.analyze(status.text).comparative
+            let analysis = sentiment.analyze(status.text)
+            senCompSum += analysis.comparative
+            posArr = posArr.concat(analysis.positive)
+            negArr = negArr.concat(analysis.negative)
         });
         let totalComp = senCompSum / numStatus
         
-        res.send({test: totalComp})
+        res.render('outPage.ejs', {
+            sentiment: {
+                comparative: totalComp,
+                positive: uniq(posArr),
+                negative: uniq(negArr)
+            }
+        })
+    })
+})
+
+router.get('/hash/:id', (req, res) => {
+    T.get('search/tweets', { q: `#${req.params.id} -filter:retweets` }, function(err, data, response) {
+        let result = sentiment.analyze(data.text)
+        console.log(result)
+        // res.send(data)
+
+        res.render('outPage.ejs', {
+            sentiment: result
+        }) 
     })
 })
 
@@ -70,6 +106,7 @@ router.post('/twitterPost', (req, res) => {
     let rePost = /https:\/\/twitter\.com\/[a-zA-Z0-9_.-]+\/status\/([0-9]+)/g
     // Test for (only) user 
     let reUser = /https:\/\/twitter\.com\/([a-zA-Z0-9_.-]+)/g
+    // User inputs a hashtag
 
     let retArr = rePost.exec(req.body.url)
     if(retArr === null){

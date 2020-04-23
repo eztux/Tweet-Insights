@@ -7,7 +7,7 @@
 <title> boot tutorial </title>
 
 <link rel="stylesheet" type = "text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-<link href="../public/stylesheets/style.css" rel="stylesheet">
+<link href="/stylesheets/style.css" rel="stylesheet">
 <link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
 
 <style>
@@ -54,12 +54,13 @@
 		<div class="d-flex justify-content-center">
 			<div class="card text-white text-center bg-dark  " style="width: 45rem;">
 				<div class="card-body text-white">
-					<label for="formGroupExampleInput">Put Twitter Account Link You want Info From Here</label>
-					<div class="input-group-prepend">
-						<span class="input-group-text" id="basic-addon3">https://twitter.com/</span>
-						<input type="text" class="form-control" id="formGroupExampleInput" placeholder="">
-					</div>
-					<button type="submit" class="btn btn-primary">Submit Link</button>
+					<form method="POST" action="twitter/twitterPost">
+						<div class="form-group">
+							<label for="formGroupExampleInput">Put Twitter Account Link You want Info From Here</label>
+							<input name="url" type="text" class="form-control" id="formGroupExampleInput" placeholder="">
+						</div>
+						<button type="submit" class="btn btn-primary">Submit Link</button>
+					</form>
 				</div>
 			</div>
 		</div>
