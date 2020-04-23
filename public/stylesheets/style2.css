@@ -50,3 +50,10 @@ h1:after {
     padding: 3px;
     line-height: 35px;
 }
+
+#sentimentVal{
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 35px;
+    margin-bottom: 35px;
+}

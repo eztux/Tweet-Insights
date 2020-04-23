@@ -68,13 +68,16 @@
 		  </div>
 		</div>
 		</div>
-		<div class="container">
+		<div id="resultHolder" class="container">
 			
 			<h2 id="demo1" style="font-size: 40px;">Negative Sentiment </h2>
 		</div>
+		<div id="sentimentVal" class="d-flex justify-content-center">
+			Comparative Sentiment: <%= sentiment.comparative.toFixed(4) %>
+		</div>
 		<div class="d-flex justify-content-center">
 			<a href="/">
-				<button type="submit" class="btn btn-primary">Try Again?</button>
+				<button type="submit" class="btn btn-secondary">Try Again?</button>
 			</a>
 		</div>
 		

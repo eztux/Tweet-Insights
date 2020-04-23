@@ -99,10 +99,14 @@ router.get('/hash/:id', (req, res) => {
         let senCompSum = 0
         let posArr = []
         let negArr = []
+        let scoreObj = {}
         let numStatus = statuses.length
 
         statuses.forEach(status => {
             let analysis = sentiment.analyze(status.text)
+            analysis.calculation.forEach(wordObj =>{
+                scoreObj = {...scoreObj, ...wordObj}
+            })
             senCompSum += analysis.comparative
             posArr = posArr.concat(analysis.positive)
             negArr = negArr.concat(analysis.negative)
@@ -111,6 +115,7 @@ router.get('/hash/:id', (req, res) => {
         
         res.render('outPage.ejs', {
             sentiment: {
+                calculations: scoreObj,
                 comparative: totalComp,
                 positive: uniq(posArr),
                 negative: uniq(negArr)
@@ -121,16 +126,19 @@ router.get('/hash/:id', (req, res) => {
 
 router.get('/handle/:id', (req, res) => {
     T.get('search/tweets', { q: `#${req.params.id} -filter:retweets`, count: 100 }, function(err, data, response) {
-        console.log(data)
         let statuses = data.statuses
 
         let senCompSum = 0
         let posArr = []
         let negArr = []
+        let scoreObj = {}
         let numStatus = statuses.length
 
         statuses.forEach(status => {
             let analysis = sentiment.analyze(status.text)
+            analysis.calculation.forEach(wordObj =>{
+                scoreObj = {...scoreObj, ...wordObj}
+            })
             senCompSum += analysis.comparative
             posArr = posArr.concat(analysis.positive)
             negArr = negArr.concat(analysis.negative)
@@ -139,6 +147,7 @@ router.get('/handle/:id', (req, res) => {
         
         res.render('outPage.ejs', {
             sentiment: {
+                calculations: scoreObj,
                 comparative: totalComp,
                 positive: uniq(posArr),
                 negative: uniq(negArr)
