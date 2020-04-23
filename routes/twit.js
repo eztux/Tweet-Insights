@@ -67,9 +67,40 @@ router.get('/user/:id', (req, res) => {
         let senCompSum = 0
         let posArr = []
         let negArr = []
+        let scoreObj = {}
         let numStatus = statuses.length
 
-        console.log(numStatus)
+        statuses.forEach(status => {
+            let analysis = sentiment.analyze(status.text)
+            analysis.calculation.forEach(wordObj =>{
+                scoreObj = {...scoreObj, ...wordObj}
+            })
+            senCompSum += analysis.comparative
+            posArr = posArr.concat(analysis.positive)
+            negArr = negArr.concat(analysis.negative)
+        });
+        let totalComp = senCompSum / numStatus
+        
+        res.render('outPage.ejs', {
+            sentiment: {
+                calculations: scoreObj,
+                comparative: totalComp,
+                positive: uniq(posArr),
+                negative: uniq(negArr)
+            }
+        })
+    })
+})
+
+router.get('/hash/:id', (req, res) => {
+    T.get('search/tweets', { q: `#${req.params.id} -filter:retweets`, count: 100 }, function(err, data, response) {
+        let statuses = data.statuses
+
+        let senCompSum = 0
+        let posArr = []
+        let negArr = []
+        let numStatus = statuses.length
+
         statuses.forEach(status => {
             let analysis = sentiment.analyze(status.text)
             senCompSum += analysis.comparative
@@ -88,15 +119,31 @@ router.get('/user/:id', (req, res) => {
     })
 })
 
-router.get('/hash/:id', (req, res) => {
-    T.get('search/tweets', { q: `#${req.params.id} -filter:retweets` }, function(err, data, response) {
-        let result = sentiment.analyze(data.text)
-        console.log(result)
-        // res.send(data)
+router.get('/handle/:id', (req, res) => {
+    T.get('search/tweets', { q: `#${req.params.id} -filter:retweets`, count: 100 }, function(err, data, response) {
+        console.log(data)
+        let statuses = data.statuses
 
+        let senCompSum = 0
+        let posArr = []
+        let negArr = []
+        let numStatus = statuses.length
+
+        statuses.forEach(status => {
+            let analysis = sentiment.analyze(status.text)
+            senCompSum += analysis.comparative
+            posArr = posArr.concat(analysis.positive)
+            negArr = negArr.concat(analysis.negative)
+        });
+        let totalComp = senCompSum / numStatus
+        
         res.render('outPage.ejs', {
-            sentiment: result
-        }) 
+            sentiment: {
+                comparative: totalComp,
+                positive: uniq(posArr),
+                negative: uniq(negArr)
+            }
+        })
     })
 })
 
@@ -107,18 +154,33 @@ router.post('/twitterPost', (req, res) => {
     // Test for (only) user 
     let reUser = /https:\/\/twitter\.com\/([a-zA-Z0-9_.-]+)/g
     // User inputs a hashtag
+    let reHash = /^#([a-zA-Z0-9_.-]+)$/g
+    // User looks for tweets using @user_name
+    let reHandle = /^@([a-zA-Z0-9_.-]+)$/g
 
     let retArr = rePost.exec(req.body.url)
-    if(retArr === null){
-        retArr = reUser.exec(req.body.url)
-        console.log(retArr)
-        res.redirect(`user/${retArr[1]}`)
-    }
-    else{
+    if(retArr != null){
         res.redirect(`tweet/${retArr[1]}`)
+        return
     }
 
-    // res.redirect(`${retArr[1]}`)
+    retArr = reUser.exec(req.body.url)
+    if(retArr != null){
+        res.redirect(`user/${retArr[1]}`)
+        return
+    }
+
+    retArr = reHash.exec(req.body.url)
+    if(retArr != null){
+        res.redirect(`hash/${retArr[1]}`)
+        return
+    }
+
+    retArr = reHandle.exec(req.body.url)
+    if(retArr != null){
+        res.redirect(`handle/${retArr[1]}`)
+        return
+    }
 })
 
 module.exports = router;

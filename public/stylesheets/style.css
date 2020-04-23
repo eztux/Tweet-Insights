@@ -34,3 +34,16 @@ h1:after {
     color: #d6d6d6;
     text-shadow: 0 1px 0 white;
 }
+
+::-webkit-input-placeholder {
+    font-style: italic;
+ }
+ :-moz-placeholder {
+    font-style: italic;  
+ }
+ ::-moz-placeholder {
+    font-style: italic;  
+ }
+ :-ms-input-placeholder {  
+    font-style: italic; 
+ }

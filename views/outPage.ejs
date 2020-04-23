@@ -42,25 +42,24 @@
 		<div class="row">
 		<div class="col d-flex justify-content-center">
 		  <div class="col-sm-5">
-			<div class="card bg-success">
+			<div id="posCard" class="card">
 			  <div class="card-body">
-				<h5 class="card-title">Positive Word Results</h5>
-				<p class="card-text">
+				<h5 class="card-title" style="text-align: center; font-size: 30px; text-decoration: underline;">Positive Word Results</h5>
+				<p class="card-text" style="text-align: center;">
 					<% for(let i = 0; i < sentiment.positive.length; i++){ %>
-					<%= sentiment.positive[i] %>
+						<span style="font-weight: bold; font-size: 20px;" class="posWord" id="<%= sentiment.positive[i] %>"><%= sentiment.positive[i] %></span>
 					<% } %>
 				</p>
-				
 			  </div>
 			</div>
 		  </div>
 		  <div class="col-sm-5">
-			<div class="card bg-danger">
+			<div id="negCard" class="card">
 			  <div class="card-body">
-				<h5 class="card-title">Negative Word Results</h5>
-				<p class="card-text">
+				<h5 class="card-title" style="text-align: center; font-size: 30px; text-decoration: underline;">Negative Word Results</h5>
+				<p class="card-text" style="text-align: center;">
 					<% for(let i = 0; i < sentiment.negative.length; i++){ %>
-					<%= sentiment.negative[i] %>
+						<span style="font-weight: bold; font-size: 20px;" class="negWord" id="<%= sentiment.negative[i] %>"><%= sentiment.negative[i] %></span>
 					<% } %>
 				</p>
 				
@@ -71,7 +70,7 @@
 		</div>
 		<div class="container">
 			
-			<h2 id="demo1" style="font-size: 40px;">Negative COCK </h2>
+			<h2 id="demo1" style="font-size: 40px;">Negative Sentiment </h2>
 		</div>
 		<div class="d-flex justify-content-center">
 			<a href="/">
@@ -109,13 +108,36 @@
 		}
 		else{
 			let circle = new CircleType(document.getElementById('demo1'))
-				<!--if positive sentiment, make dir -1 !-->
-				<!--if negative sentiment, make dir 1 !-->
+				// if positive sentiment, make dir -1 !-->
+				// if negative sentiment, make dir 1 !-->
 				.dir(dirvar)
 				.radius(radiusvar);
 		}
 
 	</script>
+	<script src="/outPage.js"></script>
+
+	<script>
+		let calculations = '<%- JSON.stringify(sentiment.calculations) %>';
+		calculations = JSON.parse(calculations)
+
+		let arr = Object.values(calculations);
+		console.log(arr)
+		let max = Math.max.apply(null, arr.map(Math.abs));
+
+		Object.keys(calculations).forEach(name => {
+			console.log(name)
+			let element = document.getElementById(name)
+
+			console.log(calculations[name])
+			let diff = max - Math.abs(calculations[name])
+			if(calculations[name] > 0)
+				element.style.backgroundColor = `rgba(20, 117, 49, ${(1 - 0.7 * diff / max)})`
+			else
+				element.style.backgroundColor = `rgba(128, 21, 21, ${(1 - 0.7 * diff / max)})`
+		})
+	</script>
+
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </body>

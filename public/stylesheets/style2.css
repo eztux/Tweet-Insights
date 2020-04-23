@@ -34,3 +34,19 @@ h1:after {
     color: #d6d6d6;
     text-shadow: 0 1px 0 white;
 }
+
+.negWord{
+    background: rgb(128, 21, 21);
+    color: rgb(26, 26, 26);
+}
+
+.posWord{
+    background: rgb(20, 117, 49);
+    color: rgb(26, 26, 26);
+}
+
+.posWord, .negWord{
+    border-radius: 5px;
+    padding: 3px;
+    line-height: 35px;
+}
