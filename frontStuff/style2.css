@@ -1,4 +1,7 @@
+
+
 html,
+body,
 header,
 #intro {
 	height: 100%;
@@ -30,16 +33,4 @@ h1:after {
     content : 'TweetInsights';
     color: #d6d6d6;
     text-shadow: 0 1px 0 white;
-}
-body {
-  background-color: #808080;
-  font-family: 'Luckiest Guy', cursive;
-  font-size: 30px;
-}
-path {
-  fill: transparent;
-}
-
-text {
-  fill: #00acee;
 }
