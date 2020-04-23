@@ -26,22 +26,62 @@ router.get('/', (req, res) => {
     res.sendFile('C:/Users/shamu/Desktop/death-project/Tweet-Insights/public/test.html')
 })
 
-router.get('/:id', (req, res) => {
+router.get('/tweet/:id', (req, res) => {
     T.get('statuses/show/:id', { id: req.params.id }, function(err, data, response) {
         let result = sentiment.analyze(data.text)
-        res.send(result)
+        console.log(data)
+        res.send(data)
+    })
+})
+
+router.get('/replies/:id', (req, res) => {
+    T.get('search/tweets', { q: `in_reply_to_status_id:${req.params.id}` }, function(err, data, response) {
+        // let result = sentiment.analyze(data.text)
+        console.log(data)
+        res.send(data)
+
+    })
+})
+
+router.get('/user/:id', (req, res) => {
+    // Make sure we count no retweets
+    T.get('search/tweets', { q: `from:${req.params.id}`, count: 100 }, function(err, data, response) {
+        // let result = sentiment.analyze(data.text)
+        // res.send(data.statuses[0])
+        // console.log(data)
+
+        let statuses = data.statuses
+
+        let senCompSum = 0
+        let numStatus = statuses.length
+        console.log(numStatus)
+        statuses.forEach(status => {
+            senCompSum += sentiment.analyze(status.text).comparative
+        });
+        let totalComp = senCompSum / numStatus
+        
+        res.send({test: totalComp})
     })
 })
 
 router.post('/twitterPost', (req, res) => {
     console.log(req.body.url)
-    let re = /https:\/\/(twitter)\.com\/([a-zA-Z0-9_.-]+)\/(status)\/([0-9]+)/g
+    // Test for user post
+    let rePost = /https:\/\/twitter\.com\/[a-zA-Z0-9_.-]+\/status\/([0-9]+)/g
+    // Test for (only) user 
+    let reUser = /https:\/\/twitter\.com\/([a-zA-Z0-9_.-]+)/g
 
-    let arr = re.exec(req.body.url)
+    let retArr = rePost.exec(req.body.url)
+    if(retArr === null){
+        retArr = reUser.exec(req.body.url)
+        console.log(retArr)
+        res.redirect(`user/${retArr[1]}`)
+    }
+    else{
+        res.redirect(`tweet/${retArr[1]}`)
+    }
 
-    console.log(arr)
-
-    res.redirect(`${arr[4]}`)
+    // res.redirect(`${retArr[1]}`)
 })
 
 module.exports = router;
